@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.UUID;
 
 public class CreateUserService {
 
@@ -15,7 +16,11 @@ public class CreateUserService {
     public CreateUserService() throws SQLException {
         var url = "jdbc:sqlite:users_database.db";
         this.connection = DriverManager.getConnection(url);
-        connection.createStatement().execute("create table Users(uuid varchar(200) primary key, email varchar(200))");
+        try {
+            connection.createStatement().execute("create table Users(uuid varchar(200) primary key, email varchar(200))");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static final String TOPIC = "ECOMMERCE_NEW_ORDER";
@@ -40,10 +45,10 @@ public class CreateUserService {
 
     private void insertNewUser(String email) throws SQLException {
         var insert = connection.prepareStatement("insert into Users (uuid, email) values (?, ?)");
-        insert.setString(1, "uuid");
-        insert.setString(2, "email");
+        insert.setString(1, UUID.randomUUID().toString());
+        insert.setString(2, email);
         insert.execute();
-        System.out.println("User uuid and email " + email + "inserted");
+        System.out.println("User uuid and email " + email + " created!");
     }
 
     private boolean isNewUser(String email) throws SQLException {

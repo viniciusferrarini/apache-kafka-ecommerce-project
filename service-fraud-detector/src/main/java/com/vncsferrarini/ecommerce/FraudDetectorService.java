@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutionException;
 public class FraudDetectorService {
 
     public static final String TOPIC = "ECOMMERCE_NEW_ORDER";
+    public static final String TOPIC_ORDER_REJECTED = "ECOMMERCE_ORDER_REJECTED";
+    public static final String TOPIC_ORDER_APPROVED = "ECOMMERCE_ORDER_APPROVED";
 
     public static void main(String[] args) {
         var fraudService = new FraudDetectorService();
@@ -36,10 +38,10 @@ public class FraudDetectorService {
         var order = record.value();
         if (isFraud(order)) {
             System.out.println("Order is a fraud!!" + order);
-            orderDispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getUserId(), order);
+            orderDispatcher.send(TOPIC_ORDER_REJECTED, order.getEmail(), order);
         } else {
             System.out.println("Order approved!!");
-            orderDispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getUserId(), order);
+            orderDispatcher.send(TOPIC_ORDER_APPROVED, order.getEmail(), order);
         }
     }
 
