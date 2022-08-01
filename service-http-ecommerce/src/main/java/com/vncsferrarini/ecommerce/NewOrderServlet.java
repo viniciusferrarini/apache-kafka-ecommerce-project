@@ -1,6 +1,8 @@
 package com.vncsferrarini.ecommerce;
 
-import jakarta.servlet.*;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,8 +39,8 @@ public class NewOrderServlet extends HttpServlet implements Servlet {
             var amount = req.getParameter("amount");
             var email = req.getParameter("email");
             var order = new Order(orderId, email, new BigDecimal(amount));
-            this.orderDispatcher.send(TOPIC_NEW_ORDER, email, order);
-            this.emailDispatcher.send(TOPIC_SEND_EMAIL, email, "Thank you for your order!");
+            this.orderDispatcher.send(TOPIC_NEW_ORDER, new CorrelationId(GenerateAllReportsServlet.class.getSimpleName()), email, order);
+            this.emailDispatcher.send(TOPIC_SEND_EMAIL, new CorrelationId(GenerateAllReportsServlet.class.getSimpleName()), email, "Thank you for your order!");
 
             System.out.println("New order sent successfully");
             resp.setStatus(HttpServletResponse.SC_OK);

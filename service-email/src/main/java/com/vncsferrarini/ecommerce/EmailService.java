@@ -10,12 +10,12 @@ public class EmailService {
 
     public static void main(String[] args) {
         var emailService = new EmailService();
-        try(var service = new KafkaService<>(EmailService.class.getSimpleName(), TOPIC, emailService::parse, String.class, Map.of())) {
+        try(var service = new KafkaService<>(EmailService.class.getSimpleName(), TOPIC, emailService::parse, Map.of())) {
             service.run();
         }
     }
 
-    private void parse(ConsumerRecord<String, String> record) {
+    private void parse(ConsumerRecord<String, Message<String>> record) {
         System.out.println("------------------");
         System.out.println("Sending email");
         System.out.println(record.key());

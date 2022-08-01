@@ -18,8 +18,8 @@ public class NewOrderMain {
                     var amount = Math.random() * 5000 + 1;
                     var email = Math.random() + "@email.com";
                     var order = new Order(orderId, email, new BigDecimal(amount));
-                    orderDispatcher.send(TOPIC_NEW_ORDER, email, order);
-                    emailDispatcher.send(TOPIC_SEND_EMAIL, email, "Thank you for your order!");
+                    orderDispatcher.send(TOPIC_NEW_ORDER, new CorrelationId(NewOrderMain.class.getSimpleName()), email, order);
+                    emailDispatcher.send(TOPIC_SEND_EMAIL, new CorrelationId(NewOrderMain.class.getSimpleName()), email, "Thank you for your order!");
                 }
             }
         }

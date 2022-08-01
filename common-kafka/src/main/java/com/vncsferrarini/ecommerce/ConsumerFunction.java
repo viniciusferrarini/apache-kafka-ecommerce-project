@@ -1,13 +1,13 @@
 package com.vncsferrarini.ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
 public interface ConsumerFunction<T> {
 
-    void consume(ConsumerRecord<String, T> record) throws ExecutionException, InterruptedException, SQLException;
+    void consume(ConsumerRecord<String, Message<T>> record) throws ExecutionException, InterruptedException, SQLException, IOException;
 
 }

@@ -1,10 +1,6 @@
 HELP.md
 target/
-/common-kafka/target/
-/service-email/target/
-/service-fraud-detector/target/
-/service-log/target/
-/service-new-order/target/
+/!**/target/
 
 ### STS ###
 .apt_generated

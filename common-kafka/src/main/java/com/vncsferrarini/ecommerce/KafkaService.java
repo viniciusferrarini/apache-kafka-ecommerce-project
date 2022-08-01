@@ -17,42 +17,44 @@ public class KafkaService<T> implements Closeable {
 
     private static final String KAFKA_SERVER = "127.0.0.1:9092";
     private final ConsumerFunction parse;
-    private final KafkaConsumer<String, String> consumer;
-    private Class<T> type;
+    private final KafkaConsumer<String, Message<T>> consumer;
 
-    KafkaService(String groupId, String topic, ConsumerFunction parse, Class<T> type, Map<String, String> properties) {
-        this(groupId, parse, type, properties);
+    KafkaService(String groupId, String topic, ConsumerFunction<T> parse, Map<String, String> properties) {
+        this(groupId, parse, properties);
         this.consumer.subscribe(Collections.singletonList(topic));
     }
 
-    KafkaService(String groupId, Pattern topic, ConsumerFunction parse, Class<T> type, Map<String, String> properties) {
-        this(groupId, parse, type, properties);
+    KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse, Map<String, String> properties) {
+        this(groupId, parse, properties);
         this.consumer.subscribe(topic);
     }
 
-    private KafkaService(String groupId, ConsumerFunction parse, Class<T> type, Map<String, String> properties) {
+    private KafkaService(String groupId, ConsumerFunction<T> parse, Map<String, String> properties) {
         this.parse = parse;
-        this.consumer = new KafkaConsumer<>(initializeProperties(groupId, type, properties));
+        this.consumer = new KafkaConsumer<>(initializeProperties(groupId, properties));
     }
 
-    public void run() {
-        while (true) {
-            var records = consumer.poll(Duration.ofMillis(100));
-            if (!records.isEmpty()) {
-                System.out.println(records.count() + " records found!");
-                for (var record : records) {
-                    try {
-                        parse.consume(record);
-                    } catch (Exception e) {
-                        // Just logging ex.
-                        throw new RuntimeException(e);
+    public void run() throws ExecutionException, InterruptedException {
+        try (var deadLetter = new KafkaDispatcher<>()) {
+            while (true) {
+                var records = consumer.poll(Duration.ofMillis(100));
+                if (!records.isEmpty()) {
+                    System.out.println(records.count() + " records found!");
+                    for (var record : records) {
+                        try {
+                            this.parse.consume(record);
+                        } catch (Exception e) {
+                            var message = record.value();
+                            deadLetter.send("ECOMMERCE_DEADLETTER", message.getId(), message.getId().continueWith("DeadLetter").toString(),
+                                    new GsonSerializer().serialize("", message));
+                        }
                     }
                 }
             }
         }
     }
 
-    private  Properties initializeProperties(String groupId, Class<T> type, Map<String, String> extraProperties) {
+    private Properties initializeProperties(String groupId, Map<String, String> extraProperties) {
         var properties = new Properties();
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER);
         // Serialize string to bytes
@@ -61,7 +63,6 @@ public class KafkaService<T> implements Closeable {
         properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
-        properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
         properties.putAll(extraProperties);
         return properties;
     }
