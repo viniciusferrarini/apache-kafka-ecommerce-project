@@ -1,5 +1,7 @@
-package com.vncsferrarini.ecommerce;
+package com.vncsferrarini.ecommerce.dispatcher;
 
+import com.vncsferrarini.ecommerce.CorrelationId;
+import com.vncsferrarini.ecommerce.Message;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -21,7 +23,7 @@ public class KafkaDispatcher<T> implements Closeable {
     }
 
     public Future<RecordMetadata> sendAsync(String topic, CorrelationId id, String key, T payload) {
-        var value = new Message<>(id, payload);
+        var value = new Message<>(id.continueWith("_" + topic), payload);
         var record = new ProducerRecord<>(topic, key, value);
         Callback callback = (data, ex) -> {
             if (ex != null) {

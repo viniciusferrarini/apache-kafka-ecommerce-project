@@ -1,5 +1,6 @@
-package com.vncsferrarini.ecommerce;
+package com.vncsferrarini.ecommerce.consumer;
 
+import com.vncsferrarini.ecommerce.Message;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.io.IOException;

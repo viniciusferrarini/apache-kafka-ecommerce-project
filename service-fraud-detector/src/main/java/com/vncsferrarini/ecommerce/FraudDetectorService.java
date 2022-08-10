@@ -1,5 +1,7 @@
 package com.vncsferrarini.ecommerce;
 
+import com.vncsferrarini.ecommerce.consumer.KafkaService;
+import com.vncsferrarini.ecommerce.dispatcher.KafkaDispatcher;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.math.BigDecimal;

@@ -1,5 +1,6 @@
 package com.vncsferrarini.ecommerce;
 
+import com.vncsferrarini.ecommerce.consumer.KafkaService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.io.File;

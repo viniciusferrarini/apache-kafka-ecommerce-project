@@ -1,5 +1,6 @@
 package com.vncsferrarini.ecommerce;
 
+import com.vncsferrarini.ecommerce.dispatcher.KafkaDispatcher;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;

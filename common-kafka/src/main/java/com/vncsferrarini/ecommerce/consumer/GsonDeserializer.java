@@ -1,7 +1,9 @@
-package com.vncsferrarini.ecommerce;
+package com.vncsferrarini.ecommerce.consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.vncsferrarini.ecommerce.Message;
+import com.vncsferrarini.ecommerce.MessageAdapter;
 import org.apache.kafka.common.serialization.Deserializer;
 
 public class GsonDeserializer<T> implements Deserializer<Message> {

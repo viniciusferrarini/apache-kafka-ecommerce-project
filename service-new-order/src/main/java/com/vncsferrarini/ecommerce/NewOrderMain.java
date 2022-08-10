@@ -1,5 +1,7 @@
 package com.vncsferrarini.ecommerce;
 
+import com.vncsferrarini.ecommerce.dispatcher.KafkaDispatcher;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
