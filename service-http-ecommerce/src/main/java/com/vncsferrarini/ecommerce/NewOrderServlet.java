@@ -19,7 +19,6 @@ public class NewOrderServlet extends HttpServlet implements Servlet {
     public static final String TOPIC_SEND_EMAIL = "ECOMMERCE_SEND_EMAIL";
 
     private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
-    private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -30,7 +29,6 @@ public class NewOrderServlet extends HttpServlet implements Servlet {
     public void destroy() {
         super.destroy();
         orderDispatcher.close();
-        emailDispatcher.close();
     }
 
     @Override
@@ -41,7 +39,6 @@ public class NewOrderServlet extends HttpServlet implements Servlet {
             var email = req.getParameter("email");
             var order = new Order(orderId, email, new BigDecimal(amount));
             this.orderDispatcher.send(TOPIC_NEW_ORDER, new CorrelationId(GenerateAllReportsServlet.class.getSimpleName()), email, order);
-            this.emailDispatcher.send(TOPIC_SEND_EMAIL, new CorrelationId(GenerateAllReportsServlet.class.getSimpleName()), email, "Thank you for your order!");
 
             System.out.println("New order sent successfully");
             resp.setStatus(HttpServletResponse.SC_OK);
